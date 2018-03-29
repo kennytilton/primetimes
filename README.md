@@ -47,7 +47,7 @@ Will they even notice? I wager not. Instead, they will be outraged that I cheate
 ````lisp
 (pp/cl-format s "~vd | ~{~vd~}" row-no-width multiplier product-width products)
 ````
-Just have to remind myself of how to right-justify, chek my use of ~vm, check my width qualifier syntax -- the rule is, if you can code Lisp format from memory you need to go do something else for a while.
+Just have to remind myself of how to right-justify, check my use of ~vm, check my width qualifier syntax -- the rule is, if you can code Lisp format from memory you need to go do something else for a while.
 
 The other trick I will throw in is good old core.async, feeding the first row of primes to a processor that will multiply which will use another channel to feed the products to a printer function. Might even see if I can sneak in a transducer and ask for another $10k.
 
@@ -59,4 +59,5 @@ The instructions were accompanied by this injunction: "[include] a bit of a narr
 ". Hence this. And narrative it will be: the above will be retained mostly as is, with new narrative as we work.
 
 ## First Contact
+RSN.
 
