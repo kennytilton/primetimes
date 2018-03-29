@@ -1,7 +1,7 @@
 # primetimes
 Hmm. A coding challenge involves determining the first N primes, without using a certain library that would help with that. Fine, I am at heart a Common Lisper, I love ignoring Java, the Gosling/Steele un-contrib that had The Great Unwashed driving with the brakes on until Rich Hickey begat The Second Coming of John Mccarthy's Lisp.
 
-But this is for an established financial institution of some repute, and having been at this IT game for as many decades as the years of experience required by many job listings, I know fast prime generation is not at all a useful assessment of how well I can help them, so my first win on the challenge is to challenge Mangement's spec. I am engineer, I have an obligation to quality that transcends all else. 
+But this is for an established financial institution of some repute, and having been at this IT game for as many decades as the years of experience required by many job listings, I know fast prime generation is not at all a useful assessment of how well I can help them, so my first win on the challenge is to challenge Mangement's spec. I am engineer, I have an obligation to productivity transcending all. 
 
 Google, here I come.
 
