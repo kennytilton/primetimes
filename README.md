@@ -22,7 +22,7 @@ For now I will use Rustler's Primes and get on with the crux of the project: the
 > my policy of starting with the crux. We manage risk by failing fast.
 >
 > Also, follow the fun. I have something nifty up my sleeve for the
-> formatting and cannot wit to get to it. A happy programmer is a
+> formatting and cannot wait to get to it. A happy programmer is a
 > productive programmer.
 > 
 
