@@ -162,7 +162,7 @@ Now we can build a sieve, working from (stealing) Paul's code but improving the 
         (recur (inc p))))
     sieve))
 ````
-The efficiency? Propagating from x^2 insteda of 2x. See the comment for why this works. The rest of the code is Paul's:
+The efficiency? Propagating from x^2 instead of 2x. See the comment for why this works. The rest of the code is Paul's:
 ````
 (defn primes [n]
   (let [max-factor (Math/sqrt n)
