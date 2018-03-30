@@ -1,9 +1,7 @@
 # primetimes
-Hmm. A coding challenge involves determining the first N primes, without using a certain library that would help with that. Fine, I am at heart a Common Lisper, I love ignoring Java, the Gosling/Steele un-contrib that had The Great Unwashed driving with the brakes on until Rich Hickey begat The Second Coming of John Mccarthy's Lisp.
+Hmm. A coding challenge involves determining the first N primes, without using a certain library that would help with that. Fine, I am at heart a Common Lisper, I love ignoring Java*, the Gosling/Steele un-contrib that had The Great Unwashed driving with the brakes on until Rich Hickey begat The Second Coming of John Mccarthy's Lisp.
 
-But this is for an established financial institution of some repute and having been at this IT game for as many decades as the years of experience required by many job listings, I know fast prime generation is not a useful assessment of how well I can help them, so my first win on the challenge is to challenge Management's spec. 
-
-I am engineer, I have an obligation to productivity. Google, here I come.
+* Kinda. I used it to test.
 
 ## Stage 1: Planning
 We think through the technology, where to improve the requirements, and where to go all Dukes of Hazzard on management roadblocks.
@@ -14,7 +12,7 @@ Searching for "clojure prime numbers" I quickly find [The Forbidden Fruit](https
 
 But I like to keep an open mind -- maybe this prospective employer knows what they are doing -- and grab also the prime number code from some [cattle rustler](http://www.thesoftwaresimpleton.com/blog/2015/02/07/primes/). Ha-ha, challenge! You tried to make me write a prime number generator, but there is more than one way to skin a code theft! 
 
-Paul the rustler done good, beats hypirion by about an order of magnitude to the millionth prime. But then I notice the fine print. Not only must I eschew The Forbidden Fruit, I must *(write your own code)*. My prospective employer is losing points fast. Must I also leave out anything I have learned about programming before doing the challenge? If I took an algorithm's class must I avoid any techniques learned? 
+Paul the rustler done good, beats hypirion by about an order of magnitude to the millionth prime. But then I notice the fine print. Not only must I eschew The Forbidden Fruit, I must *(write your own code)*. My prospective employer is losing points fast. Must I also leave out anything I have learned about programming before doing the challenge? If I took an algorithm's class must I avoid any techniques learned? [Alpha Zero](https://youtu.be/NxtEDLpJoqQ), come here! I need you!
 
 Mind you, I have them on a technicality: if I were writing my own code I would go on Google, find Paul's hack and go with it. But along the way I was surprised by [this insight](https://primes.utm.edu/notes/faq/six.html), so I will likely come back to this to see how well I can do with that. Sadly, I do not see how to leverage the divide by six insight in combination with the sieve, so in the end I will prolly code my own to make the boss happy.
 
