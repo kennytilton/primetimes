@@ -183,7 +183,18 @@ So what happen to our nifty modulo six trick? It made it into a sanity check in 
           (is (or (= m6 1)(= m6 5))))))))
 ````
 ## Stage 4: We Out
-Oh, wait. They want documentation:
+Oh, wait. They want documentation.
+
+To grab the repo:
+````bash
+git clone https://github.com/kennytilton/primetimes.git
+````
+A pre-built binary can be found in `bin`, so you can:
+````bash
+cd primetimes
+bin/primetimes -h
+````
+...to see the doc:
 ````bash
 Functionality:
 
@@ -199,4 +210,12 @@ Functionality:
    -p, --padding CELLPADDING  2  How many extra spaces should be added to widen each cell.
   -h, --help 
 ````
-And I am still not getting paid!
+You can rebuild the binary with:
+````bash
+lein bin
+````
+### Dependencies
+* [org.clojure/clojure "1.8.0"]
+* [org.clojure/tools.cli "0.3.5"] Command-line parameters for the standalone.
+* [com.hypirion/primes "0.2.2"]] Testing prime generation code.
+* [lein-binplus "0.6.4"] Building standalones.
