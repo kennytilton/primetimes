@@ -105,20 +105,21 @@ But along the way I had to solve some easy-to-reintroduce bugs that messed up th
 
 Now it is time to build a standalone binary accepting command-line parameters, using my old stand-bys clojure [tools.cli](https://github.com/clojure/tools.cli) and [lein bin-plus](https://github.com/BrunoBonacci/lein-binplus).
 ## Prime numbers stand alone
-Voila!
+Voila! No commentary. Both tools are well documented and a joy to use.
+
 ![Times table for First 15 Primes](https://github.com/kennytilton/primetimes/blob/master/doc/table-15.jpg)
 
 ## Stage 3: Make the boss happy
 Now just for the fun of it let us write our own prime number generator and make the boss happy.
 
 ### My very own prime generator
-Ignoring Mr. Cowan's work is tricky. We will try reproducing his work from scratch.
+Ignoring Mr. Cowan's work is hard once seen, so we will fake reproducing his work from scratch.
 
 Contemplation of the Sieve of Eratosthenes makes clear we need to know how far to go when propagating out the multiples of identified primes. Mr. Cowan recommends Wikipedia, but my best find was [on Stack Overflow](https://stackoverflow.com/questions/9625663/calculating-and-printing-the-nth-prime-number):
 ````
 n*(log n + log (log n) - 1) < p(n) < n*(log n + log (log n)), for n >= 6.
 ````
-The nth prime `p(n)` will fall within those bounds. Meanwhile, I was wondering why Paul threw in an airbag `...+ 3` in his implementation thereof. That was a clever, un-self-documenting way of avoiding `for n >= 6`!. Let us be more transparent:
+The nth prime `p(n)` will fall within those bounds. Meanwhile, I was wondering why Paul threw in an airbag `...+ 3` in his implementation thereof. That was a clever, un-self-documenting way of avoiding `for n >= 6`! Let us be more transparent:
 ````clojure
 (defn nth-prime-upper-bound
   "We figure out how Where p(n) is the nth prime:
