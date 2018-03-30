@@ -1,9 +1,9 @@
 # primetimes
 Hmm. A coding challenge involves determining the first N primes, without using a certain library that would help with that. Fine, I am at heart a Common Lisper, I love ignoring Java, the Gosling/Steele un-contrib that had The Great Unwashed driving with the brakes on until Rich Hickey begat The Second Coming of John Mccarthy's Lisp.
 
-But this is for an established financial institution of some repute and having been at this IT game for as many decades as the years of experience required by many job listings, I know fast prime generation is a useful assessment of how well I can help them, so my first win on the challenge is to challenge Management's spec. I am engineer, I have an obligation to productivity. 
+But this is for an established financial institution of some repute and having been at this IT game for as many decades as the years of experience required by many job listings, I know fast prime generation is not a useful assessment of how well I can help them, so my first win on the challenge is to challenge Management's spec. 
 
-Google, here I come.
+I am engineer, I have an obligation to productivity. Google, here I come.
 
 ## Stage 1: Planning
 We think through the technology, where to improve the requirements, and where to go all Dukes of Hazzard on management roadblocks.
@@ -20,9 +20,8 @@ Mind you, I have them on a technicality: if I were writing my own code I would g
 
 For now I will use Rustler's Primes and get on with the crux of the project.
 >
-> The challenge, good for it, has flushed me out and revealed a second inclination of mine along
-> with helping management by gently ignoring them: Start with the crux. Manage risk 
-> by moving the interesting bit earlier. Fail fast, as they say.
+> The challenge, good for it, has flushed me out a second time, revealing
+> my policy of starting with the crux. We manage risk by failing fast.
 > 
 
 ### Cheating on the crux
@@ -42,7 +41,7 @@ Again I will challenge the challenger and correct the spec to incude some ASCII 
 5 | 10 15 25 |
 --|----------|
 ````
-Will they even notice? I wager not. Instead, they will be outraged that I cheated on formatting by calling on my Common Lisp training to use [`clojure.pretty-print/cl-format`](https://clojuredocs.org/clojure.pprint/cl-format), a nifty Clojure implementation of Common Lisp [format](http://www.lispworks.com/documentation/lw50/CLHS/Body/f_format.htm). Ha-ha, they did not think to forbid that quirky, not-so-little text formatting DSL! 
+I wonder if they will be concerned that I cheated on formatting by calling on my Common Lisp training to use [`clojure.pretty-print/cl-format`](https://clojuredocs.org/clojure.pprint/cl-format), a nifty Clojure implementation of Common Lisp [format](http://www.lispworks.com/documentation/lw50/CLHS/Body/f_format.htm). 
 
 From memory:
 
@@ -51,10 +50,8 @@ From memory:
 ````
 Just have to remind myself of how to right-justify, check my use of ~vm, check my width qualifier syntax -- the rule is, if you can code Lisp format from memory you need to go do something else for a while.
 
-The other trick I may throw in is good old core.async, feeding the first row of primes to a processor that will multiply which will use another channel to feed the products to a printer function. Might even see if I can sneak in a transducer and ask for another $10k.
-
 ### Insubordination on testing
-The spec requires TDD. There again the challenge will be challenged. Do I need tests *during development*? Probably not, though I can write some up *after* development to make refactoring safer. We will see, but the instructions should have been "Use TDD where and how you deem best, explaining your choices."
+The spec requires TDD. There again the challenge will be challenged. Do I need tests *during development*? Probably not, though I can write some up *after* development to make refactoring safer. We will see, but the instructions might have been "Use TDD where and how you deem best, explaining your choices."
 
 ### Compliance. Finally.
 The instructions were accompanied by this injunction: "[include] a bit of a narrative of why you did what you did.
@@ -94,6 +91,11 @@ Wrapped with some more code to handle the multiplication and some nice ASCII tab
    11 |    22   33   55   77  121 |
 ------|---------------------------|
 ````
+But along the way I had to solve some easy-to-reintroduce bugs that messed up the layout, so we will toss in a test at the end to support refactoring.
+>
+> Inclination #3: Defer drudgery. Keep the fun going. Tedious stuff is more bearable when the prize is in hand.
+>
+
 Time to build a standalone accepting command-line parameters, using my old stand-bys clojure [tools.cli](https://github.com/clojure/tools.cli) and [lein bin-plus](https://github.com/BrunoBonacci/lein-binplus).
 ## Prime numbers stand alone
 Voila!
@@ -101,4 +103,12 @@ Voila!
 
 Now just for the fun of it let us write our own prime number generator and make the boss happy.
 
-### RSN
+### My very own prime generator
+Ignoring Mr. Cowan's work is tricky. We will try reproducing his work from scratch.
+
+Contemplation of the Sieve of Eratosthenes makes clear we need to know how far to go when propagating out the multiples of identified primes. Mr. Cowan recommends Wikipedia, but my best find was [on tack Overflow](https://stackoverflow.com/questions/9625663/calculating-and-printing-the-nth-prime-number):
+````
+n*(log n + log (log n) - 1) < p(n) < n*(log n + log (log n)), for n >= 6.
+````
+Ah, I was wondering why Paul threw in an airbag `...+ 3`. That was a clever, un-self-documenting, negligibly wasteful way of avoiding a conditional. Me, I do not like confuding my reader, we will use the formula only when `n >= 6`.
+````
