@@ -50,6 +50,12 @@ From memory:
 ````
 Just have to remind myself of how to right-justify, check my use of ~vm, check my width qualifier syntax -- the rule is, if you can code Lisp format from memory you need to go do something else for a while.
 
+>
+> Wait! Format is slow precisely because it *is* a DSL! Which must be interpreted! But (a) we are
+> printing to the console which is a pig anyway and (b) I am not exactly getting paid to do this
+> so we will just note the concern.
+>
+
 ### Insubordination on testing
 The spec requires TDD. There again the challenge will be challenged. Do I need tests *during development*? Probably not, though I can write some up *after* development to make refactoring safer. We will see, but the instructions might have been "Use TDD where and how you deem best, explaining your choices."
 
@@ -95,8 +101,11 @@ But along the way I had to solve some easy-to-reintroduce bugs that messed up th
 >
 > Inclination #3: Defer drudgery. Keep the fun going. Tedious stuff is more bearable when the prize is in hand.
 >
+> Footnote: Nah, testing formatted report layout for things like alignment bugs would be a bear and
+> and I am *still* not getting paid for this so again we will just note the concern.
+>
 
-Time to build a standalone accepting command-line parameters, using my old stand-bys clojure [tools.cli](https://github.com/clojure/tools.cli) and [lein bin-plus](https://github.com/BrunoBonacci/lein-binplus).
+Now it is time to build a standalone binary accepting command-line parameters, using my old stand-bys clojure [tools.cli](https://github.com/clojure/tools.cli) and [lein bin-plus](https://github.com/BrunoBonacci/lein-binplus).
 ## Prime numbers stand alone
 Voila!
 ![Times table for First 15 Primes](https://github.com/kennytilton/primetimes/blob/master/doc/table-15.jpg)
@@ -106,9 +115,22 @@ Now just for the fun of it let us write our own prime number generator and make 
 ### My very own prime generator
 Ignoring Mr. Cowan's work is tricky. We will try reproducing his work from scratch.
 
-Contemplation of the Sieve of Eratosthenes makes clear we need to know how far to go when propagating out the multiples of identified primes. Mr. Cowan recommends Wikipedia, but my best find was [on tack Overflow](https://stackoverflow.com/questions/9625663/calculating-and-printing-the-nth-prime-number):
+Contemplation of the Sieve of Eratosthenes makes clear we need to know how far to go when propagating out the multiples of identified primes. Mr. Cowan recommends Wikipedia, but my best find was [on Stack Overflow](https://stackoverflow.com/questions/9625663/calculating-and-printing-the-nth-prime-number):
 ````
 n*(log n + log (log n) - 1) < p(n) < n*(log n + log (log n)), for n >= 6.
 ````
-Ah, I was wondering why Paul threw in an airbag `...+ 3`. That was a clever, un-self-documenting, negligibly wasteful way of avoiding a conditional. Me, I do not like confuding my reader, we will use the formula only when `n >= 6`.
+Ah, I was wondering why Paul threw in an airbag `...+ 3`. That was a clever, un-self-documenting, negligibly wasteful way of avoiding a conditional. Me, I do not like confusing my reader, we will use the formula only when `n >= 6`.
+````clojure
+(defn nth-prime-upper-bound
+  "We figure out how Where p(n) is the nth prime:
+
+      n*(log n + log (log n) - 1) < p(n) < n*(log n + log (log n)), for n >= 6"
+  [n]
+  (cond
+    ;; ie, 2 3 5, with a bit of waste for n < 5
+    (< n 6) 13
+    ;; now the formula
+    :default (let [logn (Math/log n)]
+               (Math/ceil
+                 (* n (+ logn (Math/log logn)))))))
 ````
