@@ -110,6 +110,7 @@ Now it is time to build a standalone binary accepting command-line parameters, u
 Voila!
 ![Times table for First 15 Primes](https://github.com/kennytilton/primetimes/blob/master/doc/table-15.jpg)
 
+## Stage 3: Make the boss happy
 Now just for the fun of it let us write our own prime number generator and make the boss happy.
 
 ### My very own prime generator
@@ -134,3 +135,69 @@ Ah, I was wondering why Paul threw in an airbag `...+ 3`. That was a clever, un-
                (Math/ceil
                  (* n (+ logn (Math/log logn)))))))
 ````
+Now we can build a sieve, improving the data names and adding an efficiency that gets increasingly helpful at scale:
+````
+(defn sieve
+  "Build a boolean array big enough to hold the
+  nth prime where only values at prime indices are true."
+
+  [prime-upper-bound]
+
+  (let [max-factor (Math/sqrt prime-upper-bound)
+        sieve (boolean-array prime-upper-bound true)]
+    (loop [p 2]
+      (when (<= p max-factor)
+        (when (aget sieve p)
+          ;; we have a prime; propagate out via fast addition.
+          ;; we can start at the square because values between
+          ;; (+ x x), the apparent next, and (* x x) will have been handled by
+          ;; propagation of earlier primes.
+          ;;
+          ;; eg, when we find 5 is prime, 10, 15, and 20 will have been cleared
+          ;; by 2, 3, and 4.
+          ;;
+          (loop [p-product (* p p)]
+            (when (< p-product prime-upper-bound)                                   ;; do not pass end of array
+              (aset sieve p-product false)
+              (recur (+ p-product p)))))                            ;; look at next multiple of x
+        (recur (inc p))))
+    sieve))
+````
+The rest of the code is Paul's:
+````
+(defn primes [n]
+  (let [max-factor (Math/sqrt n)
+        sieve (sieve n)]
+    (filter #(aget sieve %) (range 2 n))))
+
+(defn first-n-primes [n]
+  (take n (primes (nth-prime-upper-bound n))))
+````
+So what happen to our nifty modulo six trick? It made it into a sanity check in the test suite:
+````
+(deftest primegen
+  (testing "Sanity check primality"
+    (doseq [n (first-n-primes 50)]
+      (when (> n 6)
+        (let [m6 (mod n 6)]
+          ;; necessary but not sufficient test for primality:
+          (is (or (= m6 1)(= m6 5))))))))
+````
+## Stage 4: We Out
+Oh, wait. They want documentation:
+````bash
+Functionality:
+
+   Print a times table of the first N primes to STDOUT.
+
+ Usage:
+
+    primetimes [prime-ct] options*
+
+ prime-ct: Must be at least zeo. Defaults to five (5)
+
+ Options:
+   -p, --padding CELLPADDING  2  How many extra spaces should be added to widen each cell.
+  -h, --help 
+````
+And I am still not getting paid!
