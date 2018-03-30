@@ -35,20 +35,23 @@ The challenge is, given N, print out the moral equivalent of the following for `
 ````
 Again I will challenge the challenger and correct the spec to incude some ASCII adornment:
 ````
-  |  2  3  5
-__|_________
-2 |  4  6 10
-3 |  6  9 15
-5 | 10 15 25
+  |  2  3  5 |
+--|----------|
+2 |  4  6 10 |
+3 |  6  9 15 |
+5 | 10 15 25 |
+--|----------|
 ````
-Will they even notice? I wager not. Instead, they will be outraged that I cheated on formatting by calling on my Common Lisp training to use [`clojure.pretty-print/cl-format`](https://clojuredocs.org/clojure.pprint/cl-format), a nifty Clojure implementation of Common Lisp [format](http://www.lispworks.com/documentation/lw50/CLHS/Body/f_format.htm). Ha-ha, they did not think to forbid that quirky, not-so-little text formatting DSL! From memory:
+Will they even notice? I wager not. Instead, they will be outraged that I cheated on formatting by calling on my Common Lisp training to use [`clojure.pretty-print/cl-format`](https://clojuredocs.org/clojure.pprint/cl-format), a nifty Clojure implementation of Common Lisp [format](http://www.lispworks.com/documentation/lw50/CLHS/Body/f_format.htm). Ha-ha, they did not think to forbid that quirky, not-so-little text formatting DSL! 
+
+From memory:
 
 ````lisp
-(pp/cl-format s "~vd | ~{~vd~}" row-no-width multiplier product-width products)
+(pp/cl-format s "~vd | ~{~vd~}" row-no-width row-no product-width products)
 ````
 Just have to remind myself of how to right-justify, check my use of ~vm, check my width qualifier syntax -- the rule is, if you can code Lisp format from memory you need to go do something else for a while.
 
-The other trick I will throw in is good old core.async, feeding the first row of primes to a processor that will multiply which will use another channel to feed the products to a printer function. Might even see if I can sneak in a transducer and ask for another $10k.
+The other trick I may throw in is good old core.async, feeding the first row of primes to a processor that will multiply which will use another channel to feed the products to a printer function. Might even see if I can sneak in a transducer and ask for another $10k.
 
 ### Insubordination on testing
 The spec requires TDD. There again the challenge will be challenged. Do I need tests *during development*? Probably not, though I can write some up *after* development to make refactoring safer. We will see, but the instructions should have been "Use TDD where and how you deem best, explaining your choices."
@@ -58,5 +61,44 @@ The instructions were accompanied by this injunction: "[include] a bit of a narr
 ". Hence this. And narrative it will be: the above will be retained mostly as is, with new narrative as we work.
 
 ## First Contact
-RSN.
+Common Lisp format is a hoot and always a challenge, but after a brief battle it succumbed to my twenty plus years of experience:
+````clojure
+(defn row-fmt [cell-width row-n row]
+  (pp/cl-format nil
+    "~v@a | ~{~vd~} |" cell-width row-n
+    (interleave
+      (repeat cell-width)
+      row)))
+````
+And now life is good. Displaying just a couple of rows:
+````clojure
+(doseq [p [3 5]]
+  (println (row-fmt 4 p [2 3 5 7 11 13])))
 
+=>
+   3 |    2   3   5   7  11  13 |
+   5 |    2   3   5   7  11  13 |
+````
+Wrapped with some more code to handle the multiplication and some nice ASCII tabling:
+````bash
+(println-prime-times 5 2)
+
+=>
+------|---------------------------|
+    X |     2    3    5    7   11 |
+------|---------------------------|
+    2 |     4    6   10   14   22 |
+    3 |     6    9   15   21   33 |
+    5 |    10   15   25   35   55 |
+    7 |    14   21   35   49   77 |
+   11 |    22   33   55   77  121 |
+------|---------------------------|
+````
+Time to build a standalone accepting command-line parameters, using my old stand-bys clojure [tools.cli](https://github.com/clojure/tools.cli) and [lein bin-plus](https://github.com/BrunoBonacci/lein-binplus).
+## Prime numbers stand alone
+Voila!
+![Times table for First 15 Primes](https://github.com/kennytilton/primetimes/blob/master/doc/table-15.jpg)
+
+Now just for the fun of it let us write our own prime number generator and make the boss happy.
+
+### RSN
