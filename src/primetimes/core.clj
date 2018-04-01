@@ -3,9 +3,8 @@
   (:require
     [clojure.string :as str]
     [clojure.pprint :as pp]
-    [clojure.tools.cli :refer [parse-opts] :as cli]))
-
-(declare pln xpln now row-fmt println-prime-times first-n-primes)
+    [clojure.tools.cli :refer [parse-opts] :as cli]
+    [primetimes.prime-numbers :refer :all]))
 
 (def primetimes-cli
   [["-p" "--padding CELLPADDING" "How many extra spaces should be added to widen each cell."
@@ -16,14 +15,15 @@
 
    ["-h" "--help"]])
 
-(declare prime-times-to-stdout)
-#_
-(-main "8" )
+(declare prime-times->stdout)
+
+#_(-main "-h")
 
 (defn -main [& cli-args]
   (let [input (cli/parse-opts cli-args primetimes-cli)
         {:keys [options arguments summary errors]} input
         {:keys [cell-padding help]} options
+
         nprimes (let [prime-ct (first arguments)]
                   (cond
                     (nil? prime-ct) 5
@@ -32,100 +32,74 @@
                     (try
                       (Integer/parseInt prime-ct)
                       (catch Exception e
-                        (do (println (str "Invalid number of primes: " (.getMessage e)))
-                            nil)))
+                        (println (str "Invalid number of primes: " (.getMessage e)))))
                     :default
                     nil))]
+
     (when nprimes
       (cond
         errors (doseq [e errors]
                  (println e))
 
-        help (println "\nUsage:\n\n    primetimes <prime-ct> options*\n\n"
-               "Options:\n" (subs summary 1))
+        help (println "\nFunctionality:\n\n"
+        "  Print a times table of the first N primes to STDOUT.\n\n"
+               "Usage:\n\n    primetimes [prime-ct] options*\n\n"
+               "prime-ct: Must be at least zeo. Defaults to five (5)\n\n"
+               "Options:\n" summary "\n")
 
-        :default (prime-times-to-stdout nprimes cell-padding)))))
+        :default (when (>= nprimes 1)
+                   (prime-times->stdout nprimes cell-padding))))))
 
 ;; --- report output ----------------------------
 
-(declare table-row-to-stdout)
+(declare table-row->stdout)
 
-(defn prime-times-to-stdout [prime-ct cell-padding]
+(defn prime-times->stdout [prime-ct cell-padding]
   (let [primes (first-n-primes prime-ct)
+
+        ;; places as in "tens place". How wide is a number?
         max-places (Math/ceil
                      (Math/log10
                        (Math/pow (last primes) 2)))
         cell-width (+ (max cell-padding 1) max-places)
-        header (table-row-to-stdout cell-width "X" primes)
-        divider (pp/cl-format nil "~v,,,'-a|~v,,,'-a|"
+
+        ;; we'll use this to measure de facto the table width
+        table-header (table-row->stdout cell-width "X" primes)
+
+        table-divider (pp/cl-format nil "~v,,,'-a|~v,,,'-a|"
                   (inc cell-width) ""
-                  (- (count header) cell-width 3) "")]
+                  (- (count table-header) cell-width 3) "")]
 
-    (println divider)
-    (println header)
-    (println divider)
+    (println table-divider)
+    (println table-header)
+    (println table-divider)
 
-    (loop [n 1
-           pp nil
+    (loop [row-n 1
            [p & rp] primes]
       (when p
         (let [prods (map #(* p %) primes)]
-          (println (table-row-to-stdout cell-width p prods))
-          (when (zero? (mod n 5))
-            (println divider))
-          (recur (inc n) p rp))))
+          ;; the beef
+          (println (table-row->stdout cell-width p prods))
+          ;; tables are easier to parse with a divider every so many rows:
+          (when (zero? (mod row-n 5))
+            (println table-divider))
 
-    (println divider)))
+          (recur (inc row-n) rp))))
 
-(defn table-row-to-stdout
-  "Common Lisp format is a Turing comlete DSL and
-  on a task like this is invaluable.
+    (println table-divider)))
 
-  http://www.lispworks.com/documentation/lw50/CLHS/Body/f_format.htm"
+(defn table-row->stdout
+   "Common Lisp format is a Turing comlete DSL and on a task like
+    this is great albeit obscure and slower than painfully hard-coded
+    formatting. Revisit choice if slow.
 
-  [cell-width row-prime row]
+    Its doc: http://www.lispworks.com/documentation/lw50/CLHS/Body/f_format.htm"
 
-  (pp/cl-format nil
-    "~v@a | ~{~vd~} |" cell-width row-prime
+  [cell-width row-prime table-values]
+
+  (pp/cl-format nil "~v@a | ~{~vd~} |"
+    cell-width
+    row-prime
     (interleave
       (repeat cell-width)
-      row)))
-
-;; --- Paul Cowan's Sieve of Erasthones ---
-
-(defn calc-limit [n]
-  (let [log (Math/log n)
-        loglog (Math/log log)
-        logsum (+ log loglog)]
-    (-> n (* logsum) int (+ 3))))
-
-(defn primes [n]
-  (let [max-factor (Math/sqrt n)
-        sieve (boolean-array n true)]
-    (loop [i 2]
-      (when (<= i max-factor)
-        (when (aget sieve i)
-          (loop [j (* i 2)]
-            (when (< j n)
-              (aset sieve j false)
-              (recur (+ j i)))))
-        (recur (inc i))))
-    (filter #(aget sieve %) (range 2 n))))
-
-(defn first-n-primes [n]
-  (case n
-    0 []
-    1 [2]
-    2 [2 3]
-    (take n (primes (calc-limit n)))))
-
-;; --- utils -----------------------------
-
-(defn pln [& args]
-  (locking *out*
-    (println (str/join " " args))))
-
-(defn xpln [& args])
-
-(defn now []
-  (System/currentTimeMillis))
+      table-values)))
